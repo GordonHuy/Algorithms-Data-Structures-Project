@@ -65,6 +65,7 @@ public class GUI extends JFrame{
                         g.setColor(Color.orange);
                     }
 
+                    //Detect when the mouse pointer hover above the slots
                     if (mx >= spacing+x*a+spacing+2.2 && mx < spacing+x*a+a-1*spacing && my >= spacing+y*a+a+26 && my < spacing+y*a+26+a+a-2*spacing){
                         g.setColor(Color.red);
                     }
@@ -95,7 +96,14 @@ public class GUI extends JFrame{
 
         @Override
         public void mouseClicked(MouseEvent e) {
-            System.out.println("The mouse was clicked");
+            if(inBoxX() != -1 && inBoxY() != -1){
+                System.out.println("The mouse is in the [" + inBoxX() + "," + inBoxY() + "]");
+            }
+            else {
+                System.out.println("The pointer is out of range");
+            }
+            //System.out.println("The mouse was clicked");
+
         }
 
         @Override
@@ -117,5 +125,28 @@ public class GUI extends JFrame{
         public void mouseExited(MouseEvent e) {
 
         }
+    }
+
+    //Detect if there is a click inside the slots or not  
+    public int inBoxX(){
+        for(int x = 0; x < 16; x++){
+            for(int y = 0; y < 8; y++){
+                if (mx >= spacing+x*a+spacing+2.2 && mx < spacing+x*a+a-1*spacing && my >= spacing+y*a+a+26 && my < spacing+y*a+26+a+a-2*spacing){
+                    return x;
+                }
+            }
+        }
+        return -1; //its mean its not inside the slots
+    }
+
+    public int inBoxY(){
+        for(int x = 0; x < 16; x++){
+            for(int y = 0; y < 8; y++){
+                if (mx >= spacing+x*a+spacing+2.2 && mx < spacing+x*a+a-1*spacing && my >= spacing+y*a+a+26 && my < spacing+y*a+26+a+a-2*spacing){
+                    return y;
+                }
+            }
+        }
+        return -1;
     }
 }
