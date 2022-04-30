@@ -7,6 +7,20 @@ import java.awt.*;
 
 public class GUI extends JFrame{
 
+    int spacing = 5;
+    int a = 80; //Variable for change size of the square shape slots
+
+    public int mx = -100; //Variable for mouse cordinates
+    public int my = -100;
+
+    Random rand = new Random();
+
+    //create array 16 by 8 
+    int[][] mines = new int[16][8];
+    int[][] neighbours = new int[16][8];
+    boolean[][] revealed = new boolean[16][8];
+    boolean[][] flags = new boolean[16][8];
+
     //Create the interface
     public GUI(){
         this.setTitle("Mine Sweeper");
@@ -17,8 +31,9 @@ public class GUI extends JFrame{
 
         for(int x = 0; x < 16; x++){
             for(int y = 0; y < 8; y++){
-                // mine will spawn as in this case is 1/5 chance 
-                if(rand.nextInt(100) < 20){
+                // Mine will spawn in the board as in this case is 1/5 chance 
+                if(rand.nextInt(100) < 20) //<-- Change this number to change overal difficulty of the game
+                {
                     mines[x][y] = 1;
                 }
                 else{
@@ -37,19 +52,6 @@ public class GUI extends JFrame{
         this.addMouseListener(click);
 
     }
-    int spacing = 5;
-    int a = 80; //Variable for change size of the square shape slots
-
-    public int mx = -100; //Variable for mouse cordinates
-    public int my = -100;
-
-    Random rand = new Random();
-
-    //create array 16 by 8 
-    int[][] mines = new int[16][8];
-    int[][] neighbours = new int[16][8];
-    boolean[][] revealed = new boolean[16][8];
-    boolean[][] flags = new boolean[16][8];
 
     public class Board extends JPanel{
 
@@ -61,9 +63,11 @@ public class GUI extends JFrame{
                 for(int y = 0; y < 8; y++){
                     g.setColor(Color.darkGray);  
 
-                    if (mines [x][y] == 1){
+                    /*
+                    if (mines [x][y] == 1){ //Show mines in the board (Using for debugging)
                         g.setColor(Color.orange);
                     }
+                    */
 
                     //Detect when the mouse pointer hover above the slots
                     if (mx >= spacing+x*a+spacing+2.2 && mx < spacing+x*a+a-1*spacing && my >= spacing+y*a+a+26 && my < spacing+y*a+26+a+a-2*spacing){
@@ -96,12 +100,14 @@ public class GUI extends JFrame{
 
         @Override
         public void mouseClicked(MouseEvent e) {
+
             if(inBoxX() != -1 && inBoxY() != -1){
                 System.out.println("The mouse is in the [" + inBoxX() + "," + inBoxY() + "]");
             }
             else {
                 System.out.println("The pointer is out of range");
             }
+        
             //System.out.println("The mouse was clicked");
 
         }
