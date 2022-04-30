@@ -9,6 +9,7 @@ public class GUI extends JFrame{
 
     int spacing = 5;
     int a = 80; //Variable for change size of the square shape slots
+    int neighs = 0;
 
     public int mx = -100; //Variable for mouse cordinates
     public int my = -100;
@@ -39,6 +40,25 @@ public class GUI extends JFrame{
                 else{
                     mines[x][y] = 0;
                 }
+                revealed[x][y] = false;
+            }
+        }
+
+        // Function for counting neighbour mines
+        for(int x = 0; x < 16; x++){
+            for(int y = 0; y < 8; y++){
+                neighs = 0;
+                for(int z = 0; z < 16; z++){
+                    for(int i = 0; i < 8; i++){
+                        if(!(z == x && z == y)){
+                            if (isN(x,y,z,i) == true){
+                                neighs ++;
+                            }
+                        }
+                    }
+                    neighbours[x][y] = neighs;
+                }
+        
             }
         }
 
@@ -63,11 +83,9 @@ public class GUI extends JFrame{
                 for(int y = 0; y < 8; y++){
                     g.setColor(Color.darkGray);  
 
-                    /*
-                    if (mines [x][y] == 1){ //Show mines in the board (Using for debugging)
+                    if (mines[x][y] == 1){ //Show mines in the board (Using for debugging)
                         g.setColor(Color.orange);
                     }
-                    */
 
                     //Detect when the mouse pointer hover above the slots
                     if (mx >= spacing+x*a+spacing+2.2 && mx < spacing+x*a+a-1*spacing && my >= spacing+y*a+a+26 && my < spacing+y*a+26+a+a-2*spacing){
@@ -102,7 +120,11 @@ public class GUI extends JFrame{
         public void mouseClicked(MouseEvent e) {
 
             if(inBoxX() != -1 && inBoxY() != -1){
-                System.out.println("The mouse is in the [" + inBoxX() + "," + inBoxY() + "]");
+                revealed[inBoxX()][inBoxY()] = true;
+            }
+
+            if(inBoxX() != -1 && inBoxY() != -1){
+                System.out.println("The mouse is in the [" + inBoxX() + "," + inBoxY() + "], Number of mines neighbours: " + neighbours[inBoxX()][inBoxY()]);
             }
             else {
                 System.out.println("The pointer is out of range");
@@ -154,5 +176,12 @@ public class GUI extends JFrame{
             }
         }
         return -1;
+    }
+
+    public boolean isN(int mX, int mY, int cX, int cY){
+        if (mX  - cX < 2 && mX - cX > -2 && mY - cY < 2 && mY - cY > -2 && mines[cX][cY] == 1){
+            return true;
+        }
+        return false;
     }
 }
