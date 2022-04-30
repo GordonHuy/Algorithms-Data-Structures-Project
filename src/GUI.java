@@ -11,7 +11,7 @@ public class GUI extends JFrame{
     int a = 80; //Variable for change size of the square shape slots
     int neighs = 0;
 
-    public int mx = -100; //Variable for mouse cordinates
+    public int mx = -100; //Variable for mouse coordinates
     public int my = -100;
 
     Random rand = new Random();
@@ -40,11 +40,11 @@ public class GUI extends JFrame{
                 else{
                     mines[x][y] = 0;
                 }
-                revealed[x][y] = false;
+                revealed[x][y] = false; //Revealing the number of mines in the neighbour slots from the current slot after choosing
             }
         }
 
-        // Function for counting neighbour mines
+        // Function for counting mines if they present in the neighbour slot
         for(int x = 0; x < 16; x++){
             for(int y = 0; y < 8; y++){
                 neighs = 0;
@@ -83,16 +83,40 @@ public class GUI extends JFrame{
                 for(int y = 0; y < 8; y++){
                     g.setColor(Color.darkGray);  
 
+                    /*
                     if (mines[x][y] == 1){ //Show mines in the board (Using for debugging)
                         g.setColor(Color.orange);
+                    }
+                    */
+
+                    if (revealed[x][y] == true){
+                        g.setColor(Color.WHITE);
+                        if (mines[x][y] == 1){
+                            g.setColor(Color.RED);
+                        }
                     }
 
                     //Detect when the mouse pointer hover above the slots
                     if (mx >= spacing+x*a+spacing+2.2 && mx < spacing+x*a+a-1*spacing && my >= spacing+y*a+a+26 && my < spacing+y*a+26+a+a-2*spacing){
-                        g.setColor(Color.red);
+                        g.setColor(Color.GRAY);
                     }
 
                     g.fillRect(spacing+x*a, spacing+y*a+a, a-2*spacing, a-2*spacing); //Numbers of the slots
+
+                    // Reveal the number of protential neighbour slots that containt mine
+                    if (revealed[x][y] == true){
+                        g.setColor(Color.BLACK);
+                        if (mines[x][y] == 0){
+                            g.setFont(new Font("Arial", Font.BOLD, 42 ));
+                            g.drawString(Integer.toString(neighbours[x][y]), x*80+27, y*80+80+55);
+                        }
+                        else{
+                            g.fillRect(x*a+30, y*a+a+20, 20, 40);
+                            g.fillRect(x*a+20, y*a+a+30, 40, 20);
+                            g.fillRect(x*a+25, y*a+a+25, 30, 30);
+                        }
+                    }
+
                 }
             }
         }
@@ -178,6 +202,7 @@ public class GUI extends JFrame{
         return -1;
     }
 
+    //Function for knowing the distance from neighbour slot to current slot along the X,Y axis and knowing there is the mines in that neighbour slor or not
     public boolean isN(int mX, int mY, int cX, int cY){
         if (mX  - cX < 2 && mX - cX > -2 && mY - cY < 2 && mY - cY > -2 && mines[cX][cY] == 1){
             return true;
