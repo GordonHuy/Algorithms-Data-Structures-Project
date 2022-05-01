@@ -4,6 +4,7 @@ import java.awt.event.MouseListener;
 import java.awt.event.MouseMotionListener;
 import java.util.*;
 import java.awt.*;
+import java.awt.Color;
 
 public class GUI extends JFrame{
 
@@ -33,14 +34,14 @@ public class GUI extends JFrame{
         for(int x = 0; x < 16; x++){
             for(int y = 0; y < 8; y++){
                 // Mine will spawn in the board as in this case is 1/5 chance 
-                if(rand.nextInt(100) < 20) //<-- Change this number to change overal difficulty of the game
+                if(rand.nextInt(100) < 40) //<-- Change this number to change overal difficulty of the game
                 {
                     mines[x][y] = 1;
                 }
                 else{
                     mines[x][y] = 0;
                 }
-                revealed[x][y] = false; //Revealing the number of mines in the neighbour slots from the current slot after choosing
+                revealed[x][y] = false; //Revealing the number of mines in the neighbour slots from the current slot after choosing 
             }
         }
 
@@ -81,7 +82,7 @@ public class GUI extends JFrame{
             // creating square slots in this case is horizontal 16 slots, 8 vertical slots 
             for(int x = 0; x < 16; x++){
                 for(int y = 0; y < 8; y++){
-                    g.setColor(Color.darkGray);  
+                    g.setColor(Color.darkGray);
 
                     /*
                     if (mines[x][y] == 1){ //Show mines in the board (Using for debugging)
@@ -89,31 +90,62 @@ public class GUI extends JFrame{
                     }
                     */
 
+                    //Reveal the selected slots as white, mines as red
                     if (revealed[x][y] == true){
-                        g.setColor(Color.WHITE);
+                        g.setColor(Color.white);
                         if (mines[x][y] == 1){
-                            g.setColor(Color.RED);
+                            g.setColor(Color.red);
                         }
                     }
 
                     //Detect when the mouse pointer hover above the slots
                     if (mx >= spacing+x*a+spacing+2.2 && mx < spacing+x*a+a-1*spacing && my >= spacing+y*a+a+26 && my < spacing+y*a+26+a+a-2*spacing){
-                        g.setColor(Color.GRAY);
+                        g.setColor(Color.gray);
                     }
 
                     g.fillRect(spacing+x*a, spacing+y*a+a, a-2*spacing, a-2*spacing); //Numbers of the slots
 
-                    // Reveal the number of protential neighbour slots that containt mine
+                    // Reveal the number of potential neighbour slots that contain mine
                     if (revealed[x][y] == true){
                         g.setColor(Color.BLACK);
-                        if (mines[x][y] == 0){
+                        //Show number of mines that in the neighbours slots (and color for each number)
+
+                        if (mines[x][y] == 0 && neighbours[x][y] != 0 ){
+                            if (neighbours[x][y] == 1){
+                                g.setColor(new Color(157,34,53));
+                            }
+                            else if (neighbours[x][y] == 2){
+                                g.setColor(Color.orange);
+                            }
+                            else if (neighbours[x][y] == 3){
+                                g.setColor(new Color(3,37,126));
+                            }
+                            else if (neighbours[x][y] == 4){
+                                g.setColor(Color.green);
+                            }
+                            else if (neighbours[x][y] == 5){
+                                g.setColor(Color.blue);
+                            }
+                            else if (neighbours[x][y] == 6){
+                                g.setColor(new Color(106,13,173));
+                            }
+                            else if (neighbours[x][y] == 7){
+                                g.setColor(new Color(77,77,225));
+                            }
+                            else if (neighbours[x][y] == 8){
+                                g.setColor(new Color(219,62,177));
+                            }
+
                             g.setFont(new Font("Arial", Font.BOLD, 42 ));
                             g.drawString(Integer.toString(neighbours[x][y]), x*80+27, y*80+80+55);
                         }
-                        else{
-                            g.fillRect(x*a+30, y*a+a+20, 20, 40);
+                        //Shape of the mines 
+                        else if (mines[x][y] == 1){
+                            g.fillRect(x*a+30, y*a+a+20, 20, 40); 
                             g.fillRect(x*a+20, y*a+a+30, 40, 20);
                             g.fillRect(x*a+25, y*a+a+25, 30, 30);
+                            g.fillRect(x*a+38, y*a+a+15, 5, 50);
+                            g.fillRect(x*a+15, y*a+a+38, 50, 4);
                         }
                     }
 
