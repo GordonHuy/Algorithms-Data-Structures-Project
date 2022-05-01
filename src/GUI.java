@@ -15,6 +15,11 @@ public class GUI extends JFrame{
     public int mx = -100; //Variable for mouse coordinates
     public int my = -100;
 
+    public int SmileyX = 605;
+    public int SmileyY = 5;
+
+    public boolean happy = true;
+
     Random rand = new Random();
 
     //create array 16 by 8 
@@ -77,13 +82,15 @@ public class GUI extends JFrame{
     public class Board extends JPanel{
 
         public void paintComponent(Graphics g){
+
             g.setColor(Color.lightGray);
             g.fillRect(0,0, 1280,720);
+
             // creating square slots in this case is horizontal 16 slots, 8 vertical slots 
             for(int x = 0; x < 16; x++){
                 for(int y = 0; y < 8; y++){
                     g.setColor(Color.darkGray);
-
+                
                     /*
                     if (mines[x][y] == 1){ //Show mines in the board (Using for debugging)
                         g.setColor(Color.orange);
@@ -103,7 +110,7 @@ public class GUI extends JFrame{
                         g.setColor(Color.gray);
                     }
 
-                    g.fillRect(spacing+x*a, spacing+y*a+a, a-2*spacing, a-2*spacing); //Numbers of the slots
+                    g.fillRect(spacing+x*a, spacing+y*a+a, a-2*spacing, a-2*spacing); //Numbers of the slots created
 
                     // Reveal the number of potential neighbour slots that contain mine
                     if (revealed[x][y] == true){
@@ -148,9 +155,26 @@ public class GUI extends JFrame{
                             g.fillRect(x*a+15, y*a+a+38, 50, 4);
                         }
                     }
-
                 }
             }
+
+            //Smiley dude
+            g.setColor(Color.yellow);
+            g.fillOval(SmileyX, SmileyY, 70, 70);
+            g.setColor(Color.black);
+            g.fillOval(SmileyX+15, SmileyY+20, 10, 10);
+            g.fillOval(SmileyX+45, SmileyY+20, 10, 10);
+            if (happy == true){
+                g.fillRect(SmileyX+20, SmileyY+50, 30, 5);
+                g.fillRect(SmileyX+15, SmileyY+45, 5, 5);
+                g.fillRect(SmileyX+50, SmileyY+45, 5, 5);
+            }
+            else {
+                g.fillRect(SmileyX+20, SmileyY+45, 30, 5);
+                g.fillRect(SmileyX+15, SmileyY+50, 5, 5);
+                g.fillRect(SmileyX+50, SmileyY+50, 5, 5);
+            }
+
         }
     }
 
