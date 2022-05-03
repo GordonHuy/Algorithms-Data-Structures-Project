@@ -10,6 +10,10 @@ public class Main implements Runnable {
     public void run() {
         while(true){
             gui.repaint();
+            if (gui.resetter == false){
+                gui.checkVictory();
+                System.out.println("Victory: " + gui.victory + ", Defeat: " + gui.defeat);
+            }
         }
     }
 }

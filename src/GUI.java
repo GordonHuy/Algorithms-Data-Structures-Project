@@ -17,8 +17,21 @@ public class GUI extends JFrame{
 
     public int SmileyX = 605;
     public int SmileyY = 5;
+    public int SmileyCenterX = SmileyX + 35; 
+    public int SmileyCenterY = SmileyY + 35;
+
+    public int timerX = 1090;
+    public int timerY = 5;
+
+    public int sec = 0;
 
     public boolean happy = true;
+    public boolean victory = false;
+    public boolean defeat = false;
+
+    public boolean resetter = false;
+
+    Date startDate = new Date();
 
     Random rand = new Random();
 
@@ -39,7 +52,7 @@ public class GUI extends JFrame{
         for(int x = 0; x < 16; x++){
             for(int y = 0; y < 8; y++){
                 // Mine will spawn in the board as in this case is 1/5 chance 
-                if(rand.nextInt(100) < 40) //<-- Change this number to change overal difficulty of the game
+                if(rand.nextInt(100) < 20) //<-- Change this number to change overal difficulty of the game
                 {
                     mines[x][y] = 1;
                 }
@@ -50,7 +63,7 @@ public class GUI extends JFrame{
             }
         }
 
-        // Function for counting mines if they present in the neighbour slot
+        // Function for counting the number of neighbour slots that contain mines
         for(int x = 0; x < 16; x++){
             for(int y = 0; y < 8; y++){
                 neighs = 0;
@@ -175,6 +188,40 @@ public class GUI extends JFrame{
                 g.fillRect(SmileyX+50, SmileyY+50, 5, 5);
             }
 
+            //Time counter 
+            g.setColor(Color.black);
+            g.fillRect(timerX, timerY, 185,70);
+
+            if (defeat == false && victory == false){
+                sec = (int) ((new Date().getTime()-startDate.getTime()) / 1000);
+            }
+
+            if (sec > 9999){
+                sec = 9999;
+            }
+            g.setColor(Color.white);
+
+            //Change the timer color whenever the player win or loose
+            if (victory == true){
+                g.setColor(Color.green);
+            }
+            else if (defeat == true){
+                g.setColor(Color.red);
+            }
+
+            g.setFont(new Font("Arial", Font.PLAIN, 80));
+            if (sec < 10){
+                g.drawString("   "+Integer.toString(sec), timerX+2, timerY+65);
+            }
+            else if (sec < 100){
+                g.drawString("  "+Integer.toString(sec), timerX+2, timerY+65);
+            }
+            else if (sec < 1000){
+                g.drawString(" "+Integer.toString(sec), timerX+2, timerY+65);
+            }
+            else if (sec < 9999){
+                g.drawString(Integer.toString(sec), timerX+2, timerY+65);
+            }
         }
     }
 
@@ -203,14 +250,25 @@ public class GUI extends JFrame{
                 revealed[inBoxX()][inBoxY()] = true;
             }
 
+            /*
             if(inBoxX() != -1 && inBoxY() != -1){
                 System.out.println("The mouse is in the [" + inBoxX() + "," + inBoxY() + "], Number of mines neighbours: " + neighbours[inBoxX()][inBoxY()]);
             }
             else {
                 System.out.println("The pointer is out of range");
             }
-        
+            */
+            
             //System.out.println("The mouse was clicked");
+
+            if (inSmiley() == true){
+                resetAll();
+            }
+            else {
+                /*
+                System.out.println("The pointer is not inside the smiley");
+                */
+            }
 
         }
 
@@ -233,6 +291,97 @@ public class GUI extends JFrame{
         public void mouseExited(MouseEvent e) {
 
         }
+    }
+
+    public void checkVictory(){
+
+        for(int x = 0; x < 16; x++){
+            for(int y = 0; y < 8; y++){
+                if (revealed[x][y] == true && mines[x][y] == 1){
+                    defeat = true;
+                    happy = false;
+                }
+            }
+        }
+
+        if (totalBoxesRevealed() >= 16*8  - totalMine()){
+            victory = true;
+        }
+    }
+
+    public int totalMine(){
+        int total = 0;
+        for(int x = 0; x < 16; x++){
+            for(int y = 0; y < 8; y++){
+                if (mines[x][y] == 1){
+                    total++;
+                }
+            }
+        }
+        return total;
+    }
+
+    public int totalBoxesRevealed(){
+        int total = 0;
+        for(int x = 0; x < 16; x++){
+            for(int y = 0; y < 8; y++){
+                if(revealed[x][y] == true){
+                    total++;
+                }   
+            }
+        }
+        return total;
+    }
+
+
+
+    //Reset the game (Build the entire thing again)
+    public void resetAll(){
+        resetter = true;
+        startDate = new Date();
+        happy = true;
+        victory = false;
+        defeat = false;
+
+        for(int x = 0; x < 16; x++){
+            for(int y = 0; y < 8; y++){
+                if(rand.nextInt(100) < 20) 
+                {
+                    mines[x][y] = 1;
+                }
+                else{
+                    mines[x][y] = 0;
+                }
+                revealed[x][y] = false; 
+                flags[x][y] = false;
+            }
+        }
+
+        for(int x = 0; x < 16; x++){
+            for(int y = 0; y < 8; y++){
+                neighs = 0;
+                for(int z = 0; z < 16; z++){
+                    for(int i = 0; i < 8; i++){
+                        if(!(z == x && z == y)){
+                            if (isN(x,y,z,i) == true){
+                                neighs ++;
+                            }
+                        }
+                    }
+                    neighbours[x][y] = neighs;
+                }
+            }
+        }
+        resetter = false;
+    }
+
+    //The input turn Smiley to a reset game button (Create the register area on the Smiley)
+    public boolean inSmiley(){
+        int difference = (int) Math.sqrt(Math.abs(mx-SmileyCenterX)*Math.abs(mx-SmileyCenterX)+Math.abs(my-SmileyCenterY)*Math.abs(my-SmileyCenterY));
+        if (difference < 70){
+            return true;
+        }
+        return false;
     }
 
     //Detect if there is a click inside the slots or not  
