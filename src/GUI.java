@@ -8,7 +8,7 @@ import java.awt.Color;
 
 public class GUI extends JFrame{
 
-    int spacing = 5;
+    int spacing = 1;
     int a = 80; //Variable for change size of the square shape slots
     int neighs = 0;
 
@@ -17,8 +17,8 @@ public class GUI extends JFrame{
 
     public int SmileyX = 605;
     public int SmileyY = 5;
-    public int SmileyCenterX = SmileyX + 35; 
-    public int SmileyCenterY = SmileyY + 35;
+    public int SmileyCenterX = SmileyX + 43; 
+    public int SmileyCenterY = SmileyY + 64;
 
     public int timerX = 1090;
     public int timerY = 5;
@@ -34,6 +34,12 @@ public class GUI extends JFrame{
     public boolean defeat = false;
 
     public boolean resetter = false;
+
+    public int flaggerX = 445;
+    public int flaggerY = 5;
+    public int flaggerCenterX = flaggerX + 43;
+    public int flaggerCenterY = flaggerY + 64;
+    public boolean flagger = false;
 
     Date startDate = new Date();
     Date endDate;
@@ -173,10 +179,23 @@ public class GUI extends JFrame{
                             g.fillRect(x*a+15, y*a+a+38, 50, 4);
                         }
                     }
+
+                    //Flags painting
+                    if (flags[x][y] == true){
+                        g.setColor(Color.black);
+                        g.fillRect(x*a+32+5, y*a+a+15+5, 5, 40);
+                        g.fillRect(x*a+20+5, y*a+a+50+5, 30, 10);
+                        g.setColor(Color.red);
+                        g.fillRect(x*a+16+5, y*a+a+15+5, 20, 15);
+                        g.setColor(Color.black);
+                        g.drawRect(x*a+16+5, y*a+a+15+5, 20, 15);
+                        g.drawRect(x*a+17+5, y*a+a+16+5, 18, 13);
+                        g.drawRect(x*a+18+5, y*a+a+17+5, 16, 11);
+                    }
                 }
             }
 
-            //Smiley dude
+            //Draw a Smiley dude
             g.setColor(Color.yellow);
             g.fillOval(SmileyX, SmileyY, 70, 70);
             g.setColor(Color.black);
@@ -193,11 +212,35 @@ public class GUI extends JFrame{
                 g.fillRect(SmileyX+50, SmileyY+50, 5, 5);
             }
 
-            //Time counter 
+            //Draw a flagger 
+            //Pole
+            g.setColor(Color.black);
+            g.fillRect(flaggerX+32, flaggerY+15, 5, 40);
+            g.fillRect(flaggerX+20, flaggerY+50, 30, 10);
+
+            //Flag
+            g.setColor(Color.red);
+            g.fillRect(flaggerX+16, flaggerY+15, 20, 15);
+
+            //Flag frame
+            g.setColor(Color.black);
+            g.drawRect(flaggerX+16, flaggerY+15, 20, 15);
+            g.drawRect(flaggerX+17, flaggerY+16, 18, 13);
+            g.drawRect(flaggerX+18, flaggerY+17, 16, 11);
+
+            //Circle frame around the flag
+            if (flagger == true){
+                g.setColor(Color.red);
+            }
+            g.drawOval(flaggerX, flaggerY, 70, 70);
+            g.drawOval(flaggerX+1, flaggerY+1, 68, 68);
+            g.drawOval(flaggerX+2, flaggerY+2, 66, 66);
+
+            //Draw Time counter 
             g.setColor(Color.black);
             g.fillRect(timerX, timerY, 185,70);
 
-            if (defeat == false && victory == false){
+            if (defeat == false && victory == false){ // if the player win or lose the timmer will stopped
                 sec = (int) ((new Date().getTime()-startDate.getTime()) / 1000);
             }
 
@@ -228,7 +271,7 @@ public class GUI extends JFrame{
                 g.drawString(Integer.toString(sec), timerX+2, timerY+65);
             }
 
-            // Win/Lose message 
+            //Draw Win/Lose message 
             if (victory == true) {
                 g.setColor(Color.green);
                 victoryMessage = "YOU WIN";
@@ -237,7 +280,7 @@ public class GUI extends JFrame{
                 g.setColor(Color.red);
                 victoryMessage = "YOU LOSE";
             }
-
+    
             if (victory == true || defeat == true){
                 victoryMessageY = -50 + (int) (new Date().getTime() - endDate.getTime()) / 10;
                 if (victoryMessageY > 65){
@@ -270,12 +313,23 @@ public class GUI extends JFrame{
 
         @Override
         public void mouseClicked(MouseEvent e) {
-
             mx = e.getX(); 
             my = e.getY();
 
             if(inBoxX() != -1 && inBoxY() != -1){
-                revealed[inBoxX()][inBoxY()] = true;
+                if (flagger == true && revealed[inBoxX()][inBoxY()] == false){
+                    if(flags[inBoxX()][inBoxY()] == false) {
+                        flags[inBoxX()][inBoxY()] = true;
+                    }
+                    else{
+                        flags[inBoxX()][inBoxY()] = false;
+                    }
+                }
+                else{
+                    if (flags[inBoxX()][inBoxY()] == false){
+                        revealed[inBoxX()][inBoxY()] = true;
+                    }
+                }
             }
 
             /*
@@ -286,9 +340,9 @@ public class GUI extends JFrame{
                 System.out.println("The pointer is out of range");
             }
             */
-            
             //System.out.println("The mouse was clicked");
 
+            //Register detection for Smiley
             if (inSmiley() == true){
                 resetAll();
             }
@@ -298,6 +352,17 @@ public class GUI extends JFrame{
                 */
             }
 
+            //Register deteciton for flagger
+            if (inFlagger() == true){
+                if (flagger == false){
+                    flagger = true;
+                    System.out.println("In flagger is true");
+                }
+                else {
+                    flagger = false;
+                    System.out.println(("In flagger is false"));
+                }
+            }
         }
 
         @Override
@@ -337,6 +402,7 @@ public class GUI extends JFrame{
        
         if (totalBoxesRevealed() >= 16*8 - totalMine() && victory == false){
             victory = true;
+            happy = true;
             endDate = new Date();
         }
     }
@@ -376,6 +442,7 @@ public class GUI extends JFrame{
         happy = true;
         victory = false;
         defeat = false;
+        flagger = false;
 
         for(int x = 0; x < 16; x++){
             for(int y = 0; y < 8; y++){
@@ -412,7 +479,16 @@ public class GUI extends JFrame{
     //The input turn Smiley to a reset game button (Create the register area on the Smiley)
     public boolean inSmiley(){
         int difference = (int) Math.sqrt(Math.abs(mx-SmileyCenterX)*Math.abs(mx-SmileyCenterX)+Math.abs(my-SmileyCenterY)*Math.abs(my-SmileyCenterY));
-        if (difference < 70){
+        if (difference < 70/2){
+            return true;
+        }
+        return false;
+    }
+
+    //The input for the flaggers 
+    public boolean inFlagger(){
+        int difference = (int) Math.sqrt(Math.abs(mx-flaggerCenterX)*Math.abs(mx-flaggerCenterX)+Math.abs(my-flaggerCenterY)*Math.abs(my-flaggerCenterY));
+        if (difference < 70/2){
             return true;
         }
         return false;
