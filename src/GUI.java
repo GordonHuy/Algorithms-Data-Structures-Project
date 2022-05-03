@@ -23,6 +23,10 @@ public class GUI extends JFrame{
     public int timerX = 1090;
     public int timerY = 5;
 
+    public int victoryMessageX = 700;
+    public int victoryMessageY = -50;
+    String victoryMessage = "Nothing yet";
+
     public int sec = 0;
 
     public boolean happy = true;
@@ -32,6 +36,7 @@ public class GUI extends JFrame{
     public boolean resetter = false;
 
     Date startDate = new Date();
+    Date endDate;
 
     Random rand = new Random();
 
@@ -96,13 +101,13 @@ public class GUI extends JFrame{
 
         public void paintComponent(Graphics g){
 
-            g.setColor(Color.lightGray);
+            g.setColor(new Color(0,0,205));
             g.fillRect(0,0, 1280,720);
 
             // creating square slots in this case is horizontal 16 slots, 8 vertical slots 
             for(int x = 0; x < 16; x++){
                 for(int y = 0; y < 8; y++){
-                    g.setColor(Color.darkGray);
+                    g.setColor(new Color(25,25,112));
                 
                     /*
                     if (mines[x][y] == 1){ //Show mines in the board (Using for debugging)
@@ -110,9 +115,9 @@ public class GUI extends JFrame{
                     }
                     */
 
-                    //Reveal the selected slots as white, mines as red
+                    //Reveal the selected slots as electric blue, mines as red (color can be changed for fitting the need )
                     if (revealed[x][y] == true){
-                        g.setColor(Color.white);
+                        g.setColor(new Color(125,249,255));
                         if (mines[x][y] == 1){
                             g.setColor(Color.red);
                         }
@@ -120,7 +125,7 @@ public class GUI extends JFrame{
 
                     //Detect when the mouse pointer hover above the slots
                     if (mx >= spacing+x*a+spacing+2.2 && mx < spacing+x*a+a-1*spacing && my >= spacing+y*a+a+26 && my < spacing+y*a+26+a+a-2*spacing){
-                        g.setColor(Color.gray);
+                        g.setColor(new Color(125,249,255));
                     }
 
                     g.fillRect(spacing+x*a, spacing+y*a+a, a-2*spacing, a-2*spacing); //Numbers of the slots created
@@ -141,7 +146,7 @@ public class GUI extends JFrame{
                                 g.setColor(new Color(3,37,126));
                             }
                             else if (neighbours[x][y] == 4){
-                                g.setColor(Color.green);
+                                g.setColor(new Color (0,100,0));
                             }
                             else if (neighbours[x][y] == 5){
                                 g.setColor(Color.blue);
@@ -222,6 +227,26 @@ public class GUI extends JFrame{
             else if (sec < 9999){
                 g.drawString(Integer.toString(sec), timerX+2, timerY+65);
             }
+
+            // Win/Lose message 
+            if (victory == true) {
+                g.setColor(Color.green);
+                victoryMessage = "YOU WIN";
+            }
+            else if (defeat == true){
+                g.setColor(Color.red);
+                victoryMessage = "YOU LOSE";
+            }
+
+            if (victory == true || defeat == true){
+                victoryMessageY = -50 + (int) (new Date().getTime() - endDate.getTime()) / 10;
+                if (victoryMessageY > 65){
+                    victoryMessageY = 65;
+                }
+                g.setFont(new Font("Arial", Font.PLAIN, 64));
+                g.drawString(victoryMessage, victoryMessageX, victoryMessageY);
+            }
+
         }
     }
 
@@ -245,6 +270,9 @@ public class GUI extends JFrame{
 
         @Override
         public void mouseClicked(MouseEvent e) {
+
+            mx = e.getX(); 
+            my = e.getY();
 
             if(inBoxX() != -1 && inBoxY() != -1){
                 revealed[inBoxX()][inBoxY()] = true;
@@ -295,17 +323,21 @@ public class GUI extends JFrame{
 
     public void checkVictory(){
 
-        for(int x = 0; x < 16; x++){
-            for(int y = 0; y < 8; y++){
-                if (revealed[x][y] == true && mines[x][y] == 1){
-                    defeat = true;
-                    happy = false;
+        if(defeat == false){
+            for(int x = 0; x < 16; x++){
+                for(int y = 0; y < 8; y++){
+                    if (revealed[x][y] == true && mines[x][y] == 1){
+                        defeat = true;
+                        happy = false;
+                        endDate = new Date();
+                    }
                 }
             }
         }
-
-        if (totalBoxesRevealed() >= 16*8  - totalMine()){
+       
+        if (totalBoxesRevealed() >= 16*8 - totalMine() && victory == false){
             victory = true;
+            endDate = new Date();
         }
     }
 
@@ -339,6 +371,8 @@ public class GUI extends JFrame{
     public void resetAll(){
         resetter = true;
         startDate = new Date();
+        victoryMessageY = -50;
+        victoryMessage = "Nothing yet";
         happy = true;
         victory = false;
         defeat = false;
