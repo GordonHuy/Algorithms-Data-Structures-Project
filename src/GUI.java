@@ -517,7 +517,7 @@ public class GUI extends JFrame{
         return -1;
     }
 
-    //Function for knowing the distance from neighbour slot to current slot along the X,Y axis and knowing there is the mines in that neighbour slor or not
+    //Function for knowing the distance from neighbour slot to current slot along the X,Y axis and knowing there is the mines in that neighbour slot or not
     public boolean isN(int mX, int mY, int cX, int cY){
         if (mX  - cX < 2 && mX - cX > -2 && mY - cY < 2 && mY - cY > -2 && mines[cX][cY] == 1){
             return true;
